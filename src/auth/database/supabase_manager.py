@@ -27,8 +27,16 @@ class SupabaseDatabaseManager:
         if not self.supabase_url or not self.supabase_key:
             raise ValueError("Supabase URL và Key phải được cung cấp")
         
-        # Khởi tạo Supabase client
-        self.supabase: Client = create_client(self.supabase_url, self.supabase_key)
+        # Khởi tạo Supabase client với options để tránh proxy error
+        try:
+            self.supabase: Client = create_client(self.supabase_url, self.supabase_key)
+        except TypeError as e:
+            if "proxy" in str(e):
+                # Fallback: create client without proxy options
+                from supabase import create_client as create_client_simple
+                self.supabase: Client = create_client_simple(self.supabase_url, self.supabase_key)
+            else:
+                raise
         self.lock = threading.Lock()
         # Use simple logger on Vercel
         if os.environ.get('VERCEL'):

@@ -22,26 +22,29 @@ class AuthLogger:
         
     def _get_log_directory(self) -> str:
         """Lấy thư mục log"""
-        # Check if we're on Vercel (read-only filesystem)
-        if os.environ.get('VERCEL'):
-            # Use /tmp for Vercel (writable)
+        # Always use /tmp on Vercel or when can't write to home
+        if os.environ.get('VERCEL') or os.environ.get('VERCEL_ENV'):
             return "/tmp"
         
-        if os.name == 'nt':  # Windows
-            app_data = os.environ.get('APPDATA', os.path.expanduser('~'))
-            log_dir = os.path.join(app_data, 'ElevenLabsTool', 'logs')
-        else:  # Linux/macOS
-            home_dir = os.path.expanduser('~')
-            log_dir = os.path.join(home_dir, '.elevenlabs_tool', 'logs')
-        
-        # Tạo directory nếu chưa có
+        # Try to use home directory
         try:
+            if os.name == 'nt':  # Windows
+                app_data = os.environ.get('APPDATA', os.path.expanduser('~'))
+                log_dir = os.path.join(app_data, 'ElevenLabsTool', 'logs')
+            else:  # Linux/macOS
+                home_dir = os.path.expanduser('~')
+                log_dir = os.path.join(home_dir, '.elevenlabs_tool', 'logs')
+            
+            # Test if we can write to this directory
             os.makedirs(log_dir, exist_ok=True)
-        except OSError:
-            # Fallback to /tmp if can't create directory
+            test_file = os.path.join(log_dir, '.test_write')
+            with open(test_file, 'w') as f:
+                f.write('test')
+            os.remove(test_file)
+            return log_dir
+        except (OSError, IOError):
+            # Fallback to /tmp if can't write to home directory
             return "/tmp"
-        
-        return log_dir
     
     def setup(self, level: str = "INFO", enable_console: bool = True, enable_file: bool = True) -> logging.Logger:
         """

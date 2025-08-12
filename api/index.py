@@ -16,6 +16,7 @@ os.environ.setdefault('DATABASE_TYPE', 'supabase')
 os.environ.setdefault('SUPABASE_URL', 'https://wjkejklrtrhubbljfrdz.supabase.co')
 os.environ.setdefault('SUPABASE_ANON_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indqa2Vqa2xydHJodWJibGpmcmR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5NjQyNjAsImV4cCI6MjA3MDU0MDI2MH0.M8iaT_F2nk_HpnjXh0gdiKwFGb8ed3z1RU0myWSK4kg')
 os.environ.setdefault('VERCEL', 'true')
+os.environ.setdefault('VERCEL_ENV', 'production')
 
 try:
     # Import FastAPI app
