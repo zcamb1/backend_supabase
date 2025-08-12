@@ -1,0 +1,108 @@
+
+{% extends "base.html" %}
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Stats Cards -->
+    <div class="glass rounded-lg p-6 text-white">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-blue-200 text-sm">Total Users</p>
+                <p class="text-3xl font-bold">{{ stats.total_users }}</p>
+            </div>
+            <i class="fas fa-users text-4xl text-blue-300"></i>
+        </div>
+    </div>
+    
+    <div class="glass rounded-lg p-6 text-white">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-green-200 text-sm">Active Sessions</p>
+                <p class="text-3xl font-bold">{{ stats.active_sessions }}</p>
+            </div>
+            <i class="fas fa-circle text-4xl text-green-300"></i>
+        </div>
+    </div>
+    
+    <div class="glass rounded-lg p-6 text-white">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-yellow-200 text-sm">Trial Accounts</p>
+                <p class="text-3xl font-bold">{{ stats.trial_users }}</p>
+            </div>
+            <i class="fas fa-clock text-4xl text-yellow-300"></i>
+        </div>
+    </div>
+    
+    <div class="glass rounded-lg p-6 text-white">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-purple-200 text-sm">Paid Accounts</p>
+                <p class="text-3xl font-bold">{{ stats.paid_users }}</p>
+            </div>
+            <i class="fas fa-crown text-4xl text-purple-300"></i>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Recent Activity -->
+    <div class="glass rounded-lg p-6">
+        <h3 class="text-white text-xl font-bold mb-4">
+            <i class="fas fa-clock mr-2"></i>Recent Activity
+        </h3>
+        <div class="space-y-3 max-h-96 overflow-y-auto">
+            {% for activity in recent_activities %}
+            <div class="flex items-center space-x-3 p-3 bg-white/10 rounded-lg">
+                <div class="w-2 h-2 bg-{{ activity.color }}-400 rounded-full"></div>
+                <div class="flex-1">
+                    <p class="text-white text-sm">{{ activity.message }}</p>
+                    <p class="text-gray-300 text-xs">{{ activity.timestamp }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- System Health -->
+    <div class="glass rounded-lg p-6">
+        <h3 class="text-white text-xl font-bold mb-4">
+            <i class="fas fa-heartbeat mr-2"></i>System Health
+        </h3>
+        <div class="space-y-4">
+            <div class="flex justify-between items-center">
+                <span class="text-gray-300">Database</span>
+                <span class="px-3 py-1 rounded-full text-xs {{ 'bg-green-500 text-white' if health.database else 'bg-red-500 text-white' }}">
+                    {{ 'Online' if health.database else 'Offline' }}
+                </span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-gray-300">Authentication API</span>
+                <span class="px-3 py-1 rounded-full text-xs {{ 'bg-green-500 text-white' if health.auth_api else 'bg-red-500 text-white' }}">
+                    {{ 'Online' if health.auth_api else 'Offline' }}
+                </span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-gray-300">Logging System</span>
+                <span class="px-3 py-1 rounded-full text-xs {{ 'bg-green-500 text-white' if health.logging else 'bg-red-500 text-white' }}">
+                    {{ 'Online' if health.logging else 'Offline' }}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function refreshData() {
+    fetch('/admin/api/dashboard-data')
+        .then(response => response.json())
+        .then(data => {
+            // Update stats
+            document.querySelector('[data-stat="total_users"]').textContent = data.stats.total_users;
+            document.querySelector('[data-stat="active_sessions"]').textContent = data.stats.active_sessions;
+            // ... update other elements
+        })
+        .catch(error => console.error('Error refreshing data:', error));
+}
+</script>
+{% endblock %}
+        

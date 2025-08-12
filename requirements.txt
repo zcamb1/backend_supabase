@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+psycopg2-binary
+pydantic
+python-dotenv
+cryptography
+requests 
+psutil
+jinja2
+python-multipart
+netifaces
+supabase

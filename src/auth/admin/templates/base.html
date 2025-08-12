@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElevenLabs Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .glass { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
+    </style>
+</head>
+<body class="min-h-screen">
+    <nav class="glass border-b border-white/20 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <i class="fas fa-shield-alt text-white text-2xl"></i>
+                <h1 class="text-white text-xl font-bold">ElevenLabs Admin</h1>
+            </div>
+            <div class="flex space-x-4">
+                <a href="/admin/dashboard" class="text-white hover:text-blue-200 transition-colors">
+                    <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                </a>
+                <a href="/admin/users" class="text-white hover:text-blue-200 transition-colors">
+                    <i class="fas fa-users mr-2"></i>Users
+                </a>
+                <a href="/admin/analytics" class="text-white hover:text-blue-200 transition-colors">
+                    <i class="fas fa-chart-bar mr-2"></i>Analytics
+                </a>
+                <a href="/admin/logs" class="text-white hover:text-blue-200 transition-colors">
+                    <i class="fas fa-file-alt mr-2"></i>Logs
+                </a>
+                <a href="/admin/logout" class="text-red-200 hover:text-red-100 transition-colors">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="container mx-auto p-6">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Auto-refresh data every 30 seconds
+        setInterval(() => {
+            if (typeof refreshData === 'function') {
+                refreshData();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
+        

@@ -1,0 +1,14 @@
+# Supabase Configuration
+# Copy file này thành .env và thay thế các giá trị bên dưới
+
+SUPABASE_URL=https://your-project-id.supabase.co
+SUPABASE_ANON_KEY=your_anon_public_key_here
+SUPABASE_SERVICE_KEY=your_service_role_key_here
+
+# Admin Configuration
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=admin123
+
+# Application Configuration
+APP_ENV=development
+DEBUG=true
