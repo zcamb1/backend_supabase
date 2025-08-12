@@ -30,7 +30,12 @@ class SupabaseDatabaseManager:
         # Khởi tạo Supabase client
         self.supabase: Client = create_client(self.supabase_url, self.supabase_key)
         self.lock = threading.Lock()
-        self.logger = get_logger("supabase_db")
+        # Use simple logger on Vercel
+        if os.environ.get('VERCEL'):
+            from src.auth.utils.logger import get_simple_logger
+            self.logger = get_simple_logger("supabase_db")
+        else:
+            self.logger = get_logger("supabase_db")
         
         with LoggedOperation("Initialize Supabase Database Manager", self.logger):
             self._test_connection()

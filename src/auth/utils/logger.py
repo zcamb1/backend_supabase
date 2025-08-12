@@ -131,6 +131,10 @@ def setup_logger(name: str = "elevenlabs_auth",
     if _auth_logger is None:
         _auth_logger = AuthLogger(name)
     
+    # Disable file logging on Vercel
+    if os.environ.get('VERCEL'):
+        enable_file = False
+    
     return _auth_logger.setup(level, enable_console, enable_file)
 
 def get_logger(name: Optional[str] = None) -> logging.Logger:
@@ -149,6 +153,19 @@ def get_logger(name: Optional[str] = None) -> logging.Logger:
         return logging.getLogger(name)
     else:
         return _auth_logger.logger
+
+def get_simple_logger(name: str = "simple") -> logging.Logger:
+    """
+    Get a simple console-only logger for Vercel
+    """
+    logger = logging.getLogger(name)
+    if not logger.handlers:  # Only add handler if none exist
+        logger.setLevel(logging.INFO)
+        handler = logging.StreamHandler(sys.stdout)
+        formatter = logging.Formatter('%(asctime)s | %(name)s | %(levelname)s | %(message)s')
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+    return logger
 
 # Logging decorators
 def log_function_call(logger: Optional[logging.Logger] = None):

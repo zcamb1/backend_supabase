@@ -24,17 +24,22 @@ try:
 except Exception as e:
     print(f"❌ Error importing app: {e}")
     print(f"Traceback: {traceback.format_exc()}")
+    
     # Create a simple error app
     from fastapi import FastAPI
     app = FastAPI(title="ElevenLabs Auth API (Error)")
     
     @app.get("/")
     def root():
-        return {"error": "Import failed", "details": str(e)}
+        return {"error": "Import failed", "details": str(e), "traceback": traceback.format_exc()}
     
     @app.get("/health")
     def health():
         return {"status": "error", "message": str(e)}
+    
+    @app.get("/test")
+    def test():
+        return {"message": "Simple test endpoint working"}
 
 # Export for Vercel
 handler = app
