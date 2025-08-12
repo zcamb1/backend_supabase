@@ -22,6 +22,11 @@ class AuthLogger:
         
     def _get_log_directory(self) -> str:
         """Lấy thư mục log"""
+        # Check if we're on Vercel (read-only filesystem)
+        if os.environ.get('VERCEL'):
+            # Use /tmp for Vercel (writable)
+            return "/tmp"
+        
         if os.name == 'nt':  # Windows
             app_data = os.environ.get('APPDATA', os.path.expanduser('~'))
             log_dir = os.path.join(app_data, 'ElevenLabsTool', 'logs')
@@ -30,7 +35,12 @@ class AuthLogger:
             log_dir = os.path.join(home_dir, '.elevenlabs_tool', 'logs')
         
         # Tạo directory nếu chưa có
-        os.makedirs(log_dir, exist_ok=True)
+        try:
+            os.makedirs(log_dir, exist_ok=True)
+        except OSError:
+            # Fallback to /tmp if can't create directory
+            return "/tmp"
+        
         return log_dir
     
     def setup(self, level: str = "INFO", enable_console: bool = True, enable_file: bool = True) -> logging.Logger:
@@ -64,29 +74,37 @@ class AuthLogger:
         
         # File handler với rotation
         if enable_file:
-            log_file = os.path.join(self._log_dir, f"{self.name}.log")
-            file_handler = logging.handlers.RotatingFileHandler(
-                log_file,
-                maxBytes=10*1024*1024,  # 10MB
-                backupCount=5,
-                encoding='utf-8'
-            )
-            file_handler.setFormatter(formatter)
-            file_handler.setLevel(logging.DEBUG)  # File lưu tất cả
-            self.logger.addHandler(file_handler)
+            try:
+                log_file = os.path.join(self._log_dir, f"{self.name}.log")
+                file_handler = logging.handlers.RotatingFileHandler(
+                    log_file,
+                    maxBytes=10*1024*1024,  # 10MB
+                    backupCount=5,
+                    encoding='utf-8'
+                )
+                file_handler.setFormatter(formatter)
+                file_handler.setLevel(logging.DEBUG)  # File lưu tất cả
+                self.logger.addHandler(file_handler)
+            except OSError:
+                # Fallback to console only if file logging fails
+                pass
         
         # Error file handler (riêng cho errors)
         if enable_file:
-            error_log_file = os.path.join(self._log_dir, f"{self.name}_errors.log")
-            error_handler = logging.handlers.RotatingFileHandler(
-                error_log_file,
-                maxBytes=5*1024*1024,  # 5MB
-                backupCount=3,
-                encoding='utf-8'
-            )
-            error_handler.setFormatter(formatter)
-            error_handler.setLevel(logging.ERROR)
-            self.logger.addHandler(error_handler)
+            try:
+                error_log_file = os.path.join(self._log_dir, f"{self.name}_errors.log")
+                error_handler = logging.handlers.RotatingFileHandler(
+                    error_log_file,
+                    maxBytes=5*1024*1024,  # 5MB
+                    backupCount=3,
+                    encoding='utf-8'
+                )
+                error_handler.setFormatter(formatter)
+                error_handler.setLevel(logging.ERROR)
+                self.logger.addHandler(error_handler)
+            except OSError:
+                # Fallback to console only if file logging fails
+                pass
         
         # Log initial info
         self.logger.info(f"Logger initialized - Level: {level}")
